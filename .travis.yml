@@ -16,8 +16,8 @@ install:
 
 script:
   - cmake .
-  - make
+#  - make
   # valgrind
-  - valgrind --tool=memcheck --leak-check=full --leak-resolution=med  --track-origins=yes ./main
+  - valgrind --tool=memcheck --leak-check=full --leak-resolution=med  --track-origins=yes ./iz1_rel
   # cppcheck
   - cppcheck --quiet --error-exitcode=1 .
