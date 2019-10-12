@@ -328,7 +328,6 @@ int main() {
     DynamicRoadArray *da_road = road_darray_create();
 
     read_data_file( da_road );
-
     for ( int i = 0; i < darray_size_road( da_road ); i++ ) {
         printf( "ID: %d LENGTH: %d TYPE: %d QUAL: %d LINES: %d\n",
                 darray_get_road( da_road, i ).id,
