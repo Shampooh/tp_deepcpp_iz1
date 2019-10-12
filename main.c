@@ -40,30 +40,41 @@ struct road_quality {
 };
 
 struct dynamic_road_array {
-    const DynamicRoadArrayInterface * const vtable;
+    const DynamicRoadArrayInterface *const vtable;
 };
 
 struct dynamic_char_array {
-    const DynamicCharArrayInterface * const vtable;
+    const DynamicCharArrayInterface *const vtable;
 };
 
 struct dynamic_road_array_interface {
     void (*init_road)();
-    const int (*size_road)( DynamicRoadArray * );
-    const RoadQuality (*get_road)( DynamicRoadArray *, int );
-    void (*add_road)( DynamicRoadArray *, RoadQuality );
-    void (*grow_road)( DynamicRoadArray * );
-    void (*destroy_road)( DynamicRoadArray * );
+
+    const int (*size_road)(DynamicRoadArray *);
+
+    const RoadQuality (*get_road)(DynamicRoadArray *, int);
+
+    void (*add_road)(DynamicRoadArray *, RoadQuality);
+
+    void (*grow_road)(DynamicRoadArray *);
+
+    void (*destroy_road)(DynamicRoadArray *);
 };
 
 struct dynamic_char_array_interface {
     void (*init_char)();
-    const int (*size_char)( DynamicCharArray *);
-    const char (*get_char)( DynamicCharArray *, int );
-    const char* (*get_full_char)( DynamicCharArray * );
-    void (*add_char)( DynamicCharArray *, char[]);
-    void (*grow_char)( DynamicCharArray *);
-    void (*destroy_char)( DynamicCharArray *);
+
+    const int (*size_char)(DynamicCharArray *);
+
+    const char (*get_char)(DynamicCharArray *, int);
+
+    const char *(*get_full_char)(DynamicCharArray *);
+
+    void (*add_char)(DynamicCharArray *, char[]);
+
+    void (*grow_char)(DynamicCharArray *);
+
+    void (*destroy_char)(DynamicCharArray *);
 };
 
 struct road_container {
@@ -82,56 +93,69 @@ struct char_container {
     int defaultInitialSize;
 };
 
-extern inline void darray_init_road( DynamicRoadArray *s ) { s->vtable->init_road( s ); }
-extern inline const int darray_size_road ( DynamicRoadArray *s ) { return s->vtable->size_road( s ); }
-extern inline const RoadQuality darray_get_road ( DynamicRoadArray *s, int index ) { return s->vtable->get_road( s, index ); }
-extern inline void darray_add_road ( DynamicRoadArray *s, RoadQuality r ) { s->vtable->add_road( s, r ); }
-extern inline void darray_grow_road ( DynamicRoadArray *s ) { s->vtable->grow_road( s ); }
-extern inline void darray_destroy_road ( DynamicRoadArray *s ) { s->vtable->destroy_road( s ); }
+extern inline void darray_init_road(DynamicRoadArray *s) { s->vtable->init_road(s); }
 
-extern inline void darray_init_char ( DynamicCharArray *s ) { s->vtable->init_char( s ); }
-extern inline const int darray_size_char ( DynamicCharArray *s ) { return s->vtable->size_char( s ); }
-extern inline const char darray_get_char ( DynamicCharArray *s, int index ) { return s->vtable->get_char( s, index ); }
-extern inline const char* darray_get_full_char ( DynamicCharArray *s ) { return s->vtable->get_full_char( s ); }
-extern inline void darray_add_char ( DynamicCharArray *s, char c ) { s->vtable->add_char( s, c ); }
-extern inline void darray_grow_char ( DynamicCharArray *s ) { s->vtable->grow_char( s ); }
-extern inline void darray_destroy_char ( DynamicCharArray *s ) { s->vtable->destroy_char( s ); }
+extern inline const int darray_size_road(DynamicRoadArray *s) { return s->vtable->size_road(s); }
 
-static void dynamic_init_road ( DynamicRoadArray *s ){
-    RoadContainer *cont = (void *)s;
+extern inline const RoadQuality darray_get_road(DynamicRoadArray *s, int index) {
+    return s->vtable->get_road(s, index);
+}
+
+extern inline void darray_add_road(DynamicRoadArray *s, RoadQuality r) { s->vtable->add_road(s, r); }
+
+extern inline void darray_grow_road(DynamicRoadArray *s) { s->vtable->grow_road(s); }
+
+extern inline void darray_destroy_road(DynamicRoadArray *s) { s->vtable->destroy_road(s); }
+
+extern inline void darray_init_char(DynamicCharArray *s) { s->vtable->init_char(s); }
+
+extern inline const int darray_size_char(DynamicCharArray *s) { return s->vtable->size_char(s); }
+
+extern inline const char darray_get_char(DynamicCharArray *s, int index) { return s->vtable->get_char(s, index); }
+
+extern inline const char *darray_get_full_char(DynamicCharArray *s) { return s->vtable->get_full_char(s); }
+
+extern inline void darray_add_char(DynamicCharArray *s, char c) { s->vtable->add_char(s, c); }
+
+extern inline void darray_grow_char(DynamicCharArray *s) { s->vtable->grow_char(s); }
+
+extern inline void darray_destroy_char(DynamicCharArray *s) { s->vtable->destroy_char(s); }
+
+static void dynamic_init_road(DynamicRoadArray *s) {
+    RoadContainer *cont = (void *) s;
     cont->buffer = 0;
     cont->realSize = 0;
     cont->bufferSize = 0;
     cont->defaultInitialSize = 2;
 }
-static const int dynamic_size_road ( DynamicRoadArray *s )
-{
-    RoadContainer *cont = (void *)s;
+
+static const int dynamic_size_road(DynamicRoadArray *s) {
+    RoadContainer *cont = (void *) s;
     return cont->realSize;
 }
-static const RoadQuality dynamic_get_road ( DynamicRoadArray *s, int index )
-{
-    RoadContainer *cont = (void *)s;
+
+static const RoadQuality dynamic_get_road(DynamicRoadArray *s, int index) {
+    RoadContainer *cont = (void *) s;
     return cont->buffer[index];
 }
-static void dynamic_add_road ( DynamicRoadArray *s, RoadQuality r )
-{
-    RoadContainer *cont = (void *)s;
+
+static void dynamic_add_road(DynamicRoadArray *s, RoadQuality r) {
+    RoadContainer *cont = (void *) s;
 
     if (cont->realSize == cont->bufferSize) {
-        darray_grow_road( s );
+        darray_grow_road(s);
     }
 
     cont->buffer[cont->realSize++] = r;
 }
-static void dynamic_grow_road ( DynamicRoadArray *s )
-{
-    RoadContainer *cont = (void *)s;
 
-    int newBufferSize = fmax( cont->bufferSize * 2, cont->defaultInitialSize );
-    RoadQuality* newBuffer = (RoadQuality*)malloc(newBufferSize * sizeof(RoadQuality));;
+static void dynamic_grow_road(DynamicRoadArray *s) {
+    RoadContainer *cont = (void *) s;
 
-    for( int i = 0; i < cont->realSize; ++i ) {
+    int newBufferSize = fmax(cont->bufferSize * 2, cont->defaultInitialSize);
+    RoadQuality *newBuffer = (RoadQuality *) malloc(newBufferSize * sizeof(RoadQuality));;
+
+    for (int i = 0; i < cont->realSize; ++i) {
         newBuffer[i] = cont->buffer[i];
     }
 
@@ -141,9 +165,9 @@ static void dynamic_grow_road ( DynamicRoadArray *s )
     cont->buffer = newBuffer;
     cont->bufferSize = newBufferSize;
 }
-static void dynamic_destroy_road ( DynamicRoadArray *s )
-{
-    RoadContainer *cont = (void *)s;
+
+static void dynamic_destroy_road(DynamicRoadArray *s) {
+    RoadContainer *cont = (void *) s;
     free(cont->buffer);
     cont->buffer = 0;
     cont->realSize = 0;
@@ -151,67 +175,66 @@ static void dynamic_destroy_road ( DynamicRoadArray *s )
     cont->defaultInitialSize = 2;
 }
 
-DynamicRoadArray *road_darray_create () {
+DynamicRoadArray *road_darray_create() {
 
     static const DynamicRoadArrayInterface vtable = {
             dynamic_init_road, dynamic_size_road, dynamic_get_road,
             dynamic_add_road, dynamic_grow_road, dynamic_destroy_road
     };
-    static DynamicRoadArray base = { &vtable };
+    static DynamicRoadArray base = {&vtable};
     RoadContainer *cont = malloc(sizeof(*cont));
     memcpy(&cont->base, &base, sizeof(base));
-    darray_init_road( cont );
+    darray_init_road(cont);
     return &cont->base;
 }
 
-static void dynamic_init_char ( DynamicCharArray *s )
-{
-    CharContainer *cont = (void *)s;
+static void dynamic_init_char(DynamicCharArray *s) {
+    CharContainer *cont = (void *) s;
     cont->buffer = 0;
     cont->realSize = 0;
     cont->bufferSize = 0;
     cont->defaultInitialSize = 2;
 }
-static const int dynamic_size_char ( DynamicCharArray *s )
-{
-    CharContainer *cont = (void *)s;
+
+static const int dynamic_size_char(DynamicCharArray *s) {
+    CharContainer *cont = (void *) s;
     return cont->realSize;
 }
-static const char dynamic_get_char ( DynamicCharArray *s, int index )
-{
-    CharContainer *cont = (void *)s;
+
+static const char dynamic_get_char(DynamicCharArray *s, int index) {
+    CharContainer *cont = (void *) s;
     return cont->buffer[index];
 }
-static const char* dynamic_get_full_char ( DynamicCharArray *s )
-{
-    CharContainer *cont = (void *)s;
-    const int char_size = darray_size_char( s );
-    if ( char_size <= 255 ) {
-        char *res = (char*)malloc( sizeof (char) * char_size );
-        for ( int i = 0; i < char_size; i++ ) {
-            res[i] = darray_get_char( s, i );
+
+static const char *dynamic_get_full_char(DynamicCharArray *s) {
+    CharContainer *cont = (void *) s;
+    const int char_size = darray_size_char(s);
+    if (char_size <= 255) {
+        char *res = (char *) malloc(sizeof(char) * char_size);
+        for (int i = 0; i < char_size; i++) {
+            res[i] = darray_get_char(s, i);
         }
         return res;
     } else { return 0; }
 }
-static void dynamic_add_char ( DynamicCharArray *s, char c )
-{
-    CharContainer *cont = (void *)s;
+
+static void dynamic_add_char(DynamicCharArray *s, char c) {
+    CharContainer *cont = (void *) s;
 
     if (cont->realSize == cont->bufferSize) {
-        darray_grow_char( s );
+        darray_grow_char(s);
     }
 
     cont->buffer[cont->realSize++] = c;
 }
-static void dynamic_grow_char ( DynamicCharArray *s )
-{
-    CharContainer *cont = (void *)s;
 
-    int newBufferSize = fmax( cont->bufferSize * 2, cont->defaultInitialSize );
-    char* newBuffer = (char*)malloc( newBufferSize * sizeof(char) );;
+static void dynamic_grow_char(DynamicCharArray *s) {
+    CharContainer *cont = (void *) s;
 
-    for( int i = 0; i < cont->realSize; ++i ) {
+    int newBufferSize = fmax(cont->bufferSize * 2, cont->defaultInitialSize);
+    char *newBuffer = (char *) malloc(newBufferSize * sizeof(char));;
+
+    for (int i = 0; i < cont->realSize; ++i) {
         newBuffer[i] = cont->buffer[i];
     }
 
@@ -220,9 +243,9 @@ static void dynamic_grow_char ( DynamicCharArray *s )
     cont->buffer = newBuffer;
     cont->bufferSize = newBufferSize;
 }
-static void dynamic_destroy_char ( DynamicCharArray *s )
-{
-    CharContainer *cont = (void *)s;
+
+static void dynamic_destroy_char(DynamicCharArray *s) {
+    CharContainer *cont = (void *) s;
     free(cont->buffer);
     cont->buffer = 0;
     cont->realSize = 0;
@@ -236,29 +259,27 @@ DynamicCharArray *char_darray_create() {
             dynamic_get_full_char, dynamic_add_char, dynamic_grow_char,
             dynamic_destroy_char
     };
-    static DynamicCharArray base = { &vtable };
+    static DynamicCharArray base = {&vtable};
     CharContainer *cont = malloc(sizeof(*cont));
     memcpy(&cont->base, &base, sizeof(base));
-    darray_init_char( cont );
+    darray_init_char(cont);
     return &cont->base;
 }
 
 bool validation(RoadQuality input) {
-    return ( input.id > 0 ) && ( input.length > 0) && ( input.road_type > 0) && ( input.line_count > 0);
+    return (input.id > 0) && (input.length > 0) && (input.road_type > 0) && (input.line_count > 0);
 }
 
-RoadQuality get_default_input()
-{
-    RoadQuality input = { .id = -1, .length = -1, .road_qual = -1, .road_type = -1, .line_count = -1};
+RoadQuality get_default_input() {
+    RoadQuality input = {.id = -1, .length = -1, .road_qual = -1, .road_type = -1, .line_count = -1};
     return input;
 }
 
-void add_input_data( DynamicCharArray *da_char, RoadQuality *input, int number )
-{
-    const char *full_char = darray_get_full_char( da_char );
-    const int c_size = darray_size_char( da_char );
+void add_input_data(DynamicCharArray *da_char, RoadQuality *input, int number) {
+    const char *full_char = darray_get_full_char(da_char);
+    const int c_size = darray_size_char(da_char);
     const char road_elm[c_size];
-    strncpy( road_elm, full_char, c_size );
+    strncpy(road_elm, full_char, c_size);
 
     switch (number) {
         case 0:
@@ -279,62 +300,62 @@ void add_input_data( DynamicCharArray *da_char, RoadQuality *input, int number )
         default:
             break;
     }
-    free( full_char );
+    free(full_char);
 }
 
-void *read_data_file( DynamicRoadArray *da_road ) {
+void *read_data_file(DynamicRoadArray *da_road) {
     RoadQuality input = get_default_input();
     DynamicCharArray *da_char = char_darray_create();
     FILE *file;
 
     file = fopen("./fscanf.txt", "r");
 
-    if ( !file ) {
+    if (!file) {
         return 0;
     }
 
     int i = 0;
     char c = getc(file);
-    while( c != EOF ) {
-        if( c != '\n' ) {
-            if ( c != ' ' ) {
-                darray_add_char( da_char, c );
+    while (c != EOF) {
+        if (c != '\n') {
+            if (c != ' ') {
+                darray_add_char(da_char, c);
             } else {
-                if ( i < 4 ) {
-                    add_input_data( da_char, &input, i );
-                    darray_destroy_char( da_char );
+                if (i < 4) {
+                    add_input_data(da_char, &input, i);
+                    darray_destroy_char(da_char);
                 }
                 i++;
             }
         } else {
-            if ( i == 4 ) {
-                add_input_data( da_char, &input, i );
-                darray_destroy_char( da_char );
-                if ( validation(input) ) {
-                    darray_add_road( da_road, input );
+            if (i == 4) {
+                add_input_data(da_char, &input, i);
+                darray_destroy_char(da_char);
+                if (validation(input)) {
+                    darray_add_road(da_road, input);
                 }
             }
             i = 0;
             input = get_default_input();
         }
-        c = getc( file );
+        c = getc(file);
     }
 
-    fclose( file );
-    free( da_char );
+    fclose(file);
+    free(da_char);
 }
 
 int main() {
     DynamicRoadArray *da_road = road_darray_create();
 
-    read_data_file( da_road );
-    for ( int i = 0; i < darray_size_road( da_road ); i++ ) {
-        printf( "ID: %d LENGTH: %d TYPE: %d QUAL: %d LINES: %d\n",
-                darray_get_road( da_road, i ).id,
-                darray_get_road( da_road, i ).length,
-                darray_get_road( da_road, i ).road_type,
-                darray_get_road( da_road, i ).road_qual,
-                darray_get_road( da_road, i ).line_count);
+    read_data_file(da_road);
+    for (int i = 0; i < darray_size_road(da_road); i++) {
+        printf("ID: %d LENGTH: %d TYPE: %d QUAL: %d LINES: %d\n",
+               darray_get_road(da_road, i).id,
+               darray_get_road(da_road, i).length,
+               darray_get_road(da_road, i).road_type,
+               darray_get_road(da_road, i).road_qual,
+               darray_get_road(da_road, i).line_count);
     }
 
 //    int road_type = 0;
@@ -357,7 +378,7 @@ int main() {
 //
 //    printf("%d \n", answer);
 
-    darray_destroy_road( da_road );
-    free( da_road );
+    darray_destroy_road(da_road);
+    free(da_road);
     return 0;
 }
