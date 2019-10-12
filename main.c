@@ -337,25 +337,25 @@ int main() {
                 darray_get_road( da_road, i ).line_count);
     }
 
-    int road_type = 0;
-    int line_count = 0;
-    scanf("%d", &road_type);
-    scanf("%d", &line_count);
-
-    printf("%d %d \n", road_type, line_count);
-    int k = 0;
-    int road_type_sum = 0;
-
-    for (int i = 0; i < darray_size_road( da_road ); i++) {
-        if ( darray_get_road( da_road, i ).road_type == road_type && darray_get_road( da_road, i ).line_count ) {
-            road_type_sum += darray_get_road( da_road, i ).road_qual;
-            k++;
-        }
-    }
-
-    int answer = road_type_sum / k;
-
-    printf("%d \n", answer);
+//    int road_type = 0;
+//    int line_count = 0;
+//    scanf("%d", &road_type);
+//    scanf("%d", &line_count);
+//
+//    printf("%d %d \n", road_type, line_count);
+//    int k = 0;
+//    int road_type_sum = 0;
+//
+//    for (int i = 0; i < darray_size_road( da_road ); i++) {
+//        if ( darray_get_road( da_road, i ).road_type == road_type && darray_get_road( da_road, i ).line_count ) {
+//            road_type_sum += darray_get_road( da_road, i ).road_qual;
+//            k++;
+//        }
+//    }
+//
+//    int answer = road_type_sum / k;
+//
+//    printf("%d \n", answer);
 
     darray_destroy_road( da_road );
     free( da_road );
