@@ -344,7 +344,7 @@ void *read_input_file(DynamicRoadArray *da_road) {
     DynamicCharArray *da_char = char_darray_create();
     FILE *file;
 
-    file = fopen("../input.txt", "r");
+    file = fopen("./input.txt", "r");
 
     if (!file) {
         return 0;
@@ -385,7 +385,7 @@ void *read_test_file(TestRoadQuality *input) {
     DynamicCharArray *da_char = char_darray_create();
     FILE *file;
 
-    file = fopen("../test.txt", "r");
+    file = fopen("./test.txt", "r");
 
     if (!file) {
         return 0;
@@ -452,7 +452,7 @@ int main() {
         }
     }
 
-    int answer = road_type_sum / k;
+    int answer = 0;//road_type_sum / k;
 
     printf("\nANSWER: %d \n", answer);
 
