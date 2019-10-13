@@ -18,6 +18,6 @@ script:
   - cmake .
   - make
   # valgrind
-  - valgrind --tool=memcheck --leak-check=full --leak-resolution=med  --track-origins=yes ./cmake-build-debug/iz1_rel
+  - valgrind --tool=memcheck --leak-check=full --leak-resolution=med  --track-origins=yes iz1_rel
   # cppcheck
   - cppcheck --quiet --error-exitcode=1 . --force
