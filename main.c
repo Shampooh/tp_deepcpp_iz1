@@ -18,11 +18,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <stdbool.h>
+
+#define max(a, b) \
+   ({ typeof (a) _a = (a); \
+       typeof (b) _b = (b); \
+     _a > _b ? _a : _b; })
 
 //Определяем новые типы
 typedef struct road_quality RoadQuality;
+typedef struct test_road_quality TestRoadQuality;
 typedef struct road_container RoadContainer;
 typedef struct char_container CharContainer;
 typedef struct dynamic_road_array_interface DynamicRoadArrayInterface;
@@ -36,6 +41,11 @@ struct road_quality {
     int length;
     int road_type;
     int road_qual;
+    int line_count;
+};
+
+struct test_road_quality {
+    int road_type;
     int line_count;
 };
 
@@ -151,8 +161,7 @@ static void dynamic_add_road(DynamicRoadArray *s, RoadQuality r) {
 
 static void dynamic_grow_road(DynamicRoadArray *s) {
     RoadContainer *cont = (void *) s;
-
-    int newBufferSize = fmax(cont->bufferSize * 2, cont->defaultInitialSize);
+    int newBufferSize = max(cont->bufferSize * 2, cont->defaultInitialSize);
     RoadQuality *newBuffer = (RoadQuality *) malloc(newBufferSize * sizeof(RoadQuality));;
 
     for (int i = 0; i < cont->realSize; ++i) {
@@ -230,8 +239,7 @@ static void dynamic_add_char(DynamicCharArray *s, char c) {
 
 static void dynamic_grow_char(DynamicCharArray *s) {
     CharContainer *cont = (void *) s;
-
-    int newBufferSize = fmax(cont->bufferSize * 2, cont->defaultInitialSize);
+    int newBufferSize = max(cont->bufferSize * 2, cont->defaultInitialSize);
     char *newBuffer = (char *) malloc(newBufferSize * sizeof(char));;
 
     for (int i = 0; i < cont->realSize; ++i) {
@@ -270,8 +278,17 @@ bool validation(RoadQuality input) {
     return (input.id > 0) && (input.length > 0) && (input.road_type > 0) && (input.line_count > 0);
 }
 
+bool test_validation(TestRoadQuality input) {
+    return (input.road_type > 0) && (input.line_count > 0);
+}
+
 RoadQuality get_default_input() {
     RoadQuality input = {.id = -1, .length = -1, .road_qual = -1, .road_type = -1, .line_count = -1};
+    return input;
+}
+
+TestRoadQuality get_test_input() {
+    TestRoadQuality input = {.road_type = -1, .line_count = -1};
     return input;
 }
 
@@ -303,12 +320,31 @@ void add_input_data(DynamicCharArray *da_char, RoadQuality *input, int number) {
     free(full_char);
 }
 
-void *read_data_file(DynamicRoadArray *da_road) {
+void add_test_data(DynamicCharArray *da_char, TestRoadQuality *input, int number) {
+    const char *full_char = darray_get_full_char(da_char);
+    const int c_size = darray_size_char(da_char);
+    const char road_elm[c_size];
+    strncpy(road_elm, full_char, c_size);
+
+    switch (number) {
+        case 0:
+            input->road_type = atoi(road_elm);
+            break;
+        case 1:
+            input->line_count = atoi(road_elm);
+            break;
+        default:
+            break;
+    }
+    free(full_char);
+}
+
+void *read_input_file(DynamicRoadArray *da_road) {
     RoadQuality input = get_default_input();
     DynamicCharArray *da_char = char_darray_create();
     FILE *file;
 
-    file = fopen("./fscanf.txt", "r");
+    file = fopen("../input.txt", "r");
 
     if (!file) {
         return 0;
@@ -345,10 +381,52 @@ void *read_data_file(DynamicRoadArray *da_road) {
     free(da_char);
 }
 
+void *read_test_file(TestRoadQuality *input) {
+    DynamicCharArray *da_char = char_darray_create();
+    FILE *file;
+
+    file = fopen("../test.txt", "r");
+
+    if (!file) {
+        return 0;
+    }
+
+    int i = 0;
+    char c = getc(file);
+    while (c != EOF) {
+        if (c != '\n') {
+            if (c != ' ') {
+                darray_add_char(da_char, c);
+            } else {
+                if (i < 1) {
+                    add_test_data(da_char, input, i);
+                    darray_destroy_char(da_char);
+                }
+                i++;
+            }
+        } else {
+            if (i == 1) {
+                add_test_data(da_char, input, i);
+                darray_destroy_char(da_char);
+                break;
+            }
+            i = 0;
+            input->line_count = -1;
+            input->road_type = -1;
+        }
+        c = getc(file);
+    }
+
+    fclose(file);
+    free(da_char);
+}
+
 int main() {
     DynamicRoadArray *da_road = road_darray_create();
 
-    read_data_file(da_road);
+    read_input_file(da_road);
+
+    printf("INPUT FROM A FILE:\n");
     for (int i = 0; i < darray_size_road(da_road); i++) {
         printf("ID: %d LENGTH: %d TYPE: %d QUAL: %d LINES: %d\n",
                darray_get_road(da_road, i).id,
@@ -358,25 +436,25 @@ int main() {
                darray_get_road(da_road, i).line_count);
     }
 
-//    int road_type = 0;
-//    int line_count = 0;
-//    scanf("%d", &road_type);
-//    scanf("%d", &line_count);
-//
-//    printf("%d %d \n", road_type, line_count);
-//    int k = 0;
-//    int road_type_sum = 0;
-//
-//    for (int i = 0; i < darray_size_road( da_road ); i++) {
-//        if ( darray_get_road( da_road, i ).road_type == road_type && darray_get_road( da_road, i ).line_count ) {
-//            road_type_sum += darray_get_road( da_road, i ).road_qual;
-//            k++;
-//        }
-//    }
-//
-//    int answer = road_type_sum / k;
-//
-//    printf("%d \n", answer);
+    TestRoadQuality test_input = get_test_input();
+    read_test_file( &test_input );
+
+    printf("\nREAD TEST DATA:\n");
+    printf("TYPE: %d LINES: %d\n", test_input.road_type, test_input.line_count);
+    int k = 0;
+    int road_type_sum = 0;
+
+    for (int i = 0; i < darray_size_road( da_road ); i++) {
+        if ( darray_get_road( da_road, i ).road_type == test_input.road_type &&
+                darray_get_road( da_road, i ).line_count == test_input.line_count ) {
+            road_type_sum += darray_get_road( da_road, i ).road_qual;
+            k++;
+        }
+    }
+
+    int answer = road_type_sum / k;
+
+    printf("\nANSWER: %d \n", answer);
 
     darray_destroy_road(da_road);
     free(da_road);
