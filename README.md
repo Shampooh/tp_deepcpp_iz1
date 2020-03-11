@@ -1,6 +1,6 @@
 # tp_deepcpp_iz1
 
-[![Build Status](https://travis-ci.com/Shampooh/tp_deepcpp_iz1.svg?branch=dev)](https://travis-ci.com/Shampooh/tp_deepcpp_iz1)
+[![Build Status](https://travis-ci.com/almashell/tp_deepcpp_iz1.svg?branch=dev)](https://travis-ci.com/almshell/tp_deepcpp_iz1)
 
 Индивидуальное задание №1 
 
