@@ -7,3 +7,9 @@ cmake_install.cmake
 install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
+.idea
+cmake-build-debug
+iz1_rel.dSYM
+iz1_rel
+iz1_rel.cbp
+.DS_Store
